@@ -36,6 +36,7 @@ function hashsum(options) {
     force: false,
     delimiter: "  ",
     json: false,
+    jsonPrettyPrint: false,
     stream: false
   });
   options = _.defaults(options, {
@@ -69,8 +70,18 @@ function hashsum(options) {
 
   function writeSums() {
     var contents;
-    if (options.json) {
-      contents = JSON.stringify(hashes);
+    if (options.json || options.jsonPrettyPrint) {
+      var ordered = {};
+      _.keys(hashes)
+        .sort()
+        .forEach(function(key) {
+          ordered[key] = hashes[key];
+        });
+      contents = JSON.stringify(
+        ordered,
+        null,
+        options.jsonPrettyPrint ? 2 : null
+      );
     } else {
       var lines = _.keys(hashes)
         .sort()
